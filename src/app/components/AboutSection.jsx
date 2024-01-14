@@ -22,7 +22,6 @@ const AboutSection = () => {
           possimus harum ratione voluptas exercitationem ipsam est fugit perspiciatis eius!
           </p>
           <div className='flex flex-row mt-8'>
-            <span className='mr-3 font-semibold hover:text-white text-[#ADB7BE]border-b border-purple-500 '>Skills</span>
           </div>
         </div>
       </div>
