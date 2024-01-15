@@ -1,6 +1,7 @@
 "use client";
 import React, {useTransition,useState} from 'react'
 import Image from 'next/image'
+import TabButton from './TabButton';
 
 const AboutSection = () => {
   const [tab,setTab] = useState("skills")
@@ -22,7 +23,7 @@ const AboutSection = () => {
           possimus harum ratione voluptas exercitationem ipsam est fugit perspiciatis eius!
           </p>
           <div className='flex flex-row mt-8'>
-          </div>
+            <TabButton selectTab{()=> handleTabChange("skills")} active{tab === "skills"}> Skills </TabButton>
         </div>
       </div>
       </section>
