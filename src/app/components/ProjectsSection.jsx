@@ -24,7 +24,7 @@ const projectsData = [
     id: 3,
     title: "E-commerce Application",
     description: "Project 3 description",
-    image: "/images/projects/3.png",
+    image: "/images/hero-image.png",
     tag: ["All", "Web"],
     gitUrl: "/",
     previewUrl: "/",
@@ -63,8 +63,8 @@ const ProjectsSection = () => {
      <div className='grid md:grid-cols-3 gap-8 md:gap-12'>
       {projectsData.map((project) => (
         <ProjectCard 
-        key={project.id}
-         title = {project.title }
+          key={project.id}
+          title = {project.title }
           description={project.description} 
           imgUrl={project.image}
           />
