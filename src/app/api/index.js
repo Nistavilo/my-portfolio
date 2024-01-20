@@ -11,6 +11,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.post('/email', (req, res) => {
+    console.log(process.env.EMAIL)
+    console.log(process.env.PASSWORD)
     const { fullName, mail, comments } = req.body;
 
     const content = {
@@ -28,7 +30,7 @@ app.post('/email', (req, res) => {
         res.status(500).json("An error occurred while sending Message. Try again");
     }
 });
-
+console.log(process.env.EMAIL)
 const sendVerificationEmail = async (content) => {
     const transporter = nodemailer.createTransport({
         service: "gmail",
