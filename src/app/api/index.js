@@ -40,7 +40,7 @@ const sendVerificationEmail = async (content) => {
 
     const mailOptions = {
         from: "Your Portfolio",
-        to: "osmanbeyhan12@gmail.com",
+        to: "emirhankorkmaz275@gmail.com",
         subject: "New Message",
         text: `Message Details:\nFull Name: ${content.fullName}\nEmail: ${content.email}\nComments: ${content.comments}`,
     };
