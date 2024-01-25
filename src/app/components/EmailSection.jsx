@@ -1,4 +1,4 @@
-// Import necessary modules and libraries
+"use client"
 import React, { useState } from "react";
 import axios from "axios";
 import GithubIcon from "../../../public/github-icon.svg";
@@ -8,6 +8,10 @@ import Image from "next/image";
 // EmailSection component
 const EmailSection = () => {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [fullName, setFullName] = useState("")
+  const [email, setMail] = useState("");
+  const [comments, setComments] = useState("")
+
 
   // Handle form submission using Axios
   const handleSubmit = async (e) => {
@@ -15,14 +19,14 @@ const EmailSection = () => {
     
     // Extract form data
     const data = {
-      email: e.target.email.value,
-      subject: e.target.subject.value,
-      message: e.target.message.value,
+      fullName: fullName,
+      email: email,
+      comments: comments
     };
-
+    console.log(data);
     try {
       // Send POST request using Axios
-      const response = await axios.post("/api/send", data, {
+      const response = await axios.post("http://localhost:4000/email", data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -31,7 +35,6 @@ const EmailSection = () => {
       // Check if the request was successful
       if (response.status === 200) {
         console.log("Message sent.");
-        setEmailSubmitted(true);
       }
     } catch (error) {
       console.error("Error sending email:", error);
@@ -69,7 +72,22 @@ const EmailSection = () => {
           <form className="flex flex-col" onSubmit={handleSubmit}>
             {/* Email input */}
             <div className="mb-6">
-              <label htmlFor="email" className="text-white block mb-2 text-sm font-medium">Your email</label>
+              <label htmlFor="email" className="text-white block mb-2 text-sm font-medium">Your Fullname</label>
+              <input
+                name="fullname"
+                type="text"
+                id="fullname"
+                required
+                className="bg-[#18191E] border border-[#33353F] placeholder-[#9CA2A9] text-gray-100 text-sm rounded-lg block w-full p-2.5"
+                placeholder="Fullname"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+            </div>
+            
+            {/* Subject input */}   
+            <div className="mb-6">
+              <label htmlFor="subject" className="text-white block text-sm mb-2 font-medium">Your email</label>
               <input
                 name="email"
                 type="email"
@@ -77,19 +95,9 @@ const EmailSection = () => {
                 required
                 className="bg-[#18191E] border border-[#33353F] placeholder-[#9CA2A9] text-gray-100 text-sm rounded-lg block w-full p-2.5"
                 placeholder="email"
-              />
-            </div>
-            
-            {/* Subject input */}   
-            <div className="mb-6">
-              <label htmlFor="subject" className="text-white block text-sm mb-2 font-medium">Subject</label>
-              <input
-                name="subject"
-                type="text"
-                id="subject"
-                required
-                className="bg-[#18191E] border border-[#33353F] placeholder-[#9CA2A9] text-gray-100 text-sm rounded-lg block w-full p-2.5"
-                placeholder="Just saying hi"
+                value={email}
+                onChange={(e) => setMail(e.target.value)}
+
               />
             </div>
             
@@ -101,6 +109,8 @@ const EmailSection = () => {
                 id="message"
                 className="bg-[#18191E] border border-[#33353F] placeholder-[#9CA2A9] text-gray-100 text-sm rounded-lg block w-full p-2.5"
                 placeholder="Let's talk about..."
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
               />
             </div>
             

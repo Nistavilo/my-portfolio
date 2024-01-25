@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express();
 const dotenv = require("dotenv")
+
 dotenv.config();
 const port = process.env.PORT;
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
+const cors = require('cors')
 
+app.use(cors());
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -13,14 +16,14 @@ app.use(bodyParser.json());
 app.post('/email', (req, res) => {
     console.log(process.env.EMAIL)
     console.log(process.env.PASSWORD)
-    const { fullName, mail, comments } = req.body;
+    const { fullName, email, comments } = req.body;
 
     const content = {
         fullName: fullName,
-        email: mail,
+        email: email,
         comments: comments
     };
-
+    console.log(content);
     try {
         sendVerificationEmail(content);
         console.log("Successfully sending Message");
@@ -57,3 +60,5 @@ const sendVerificationEmail = async (content) => {
 app.listen(port, () => {
     console.log(`Uygulama http://localhost:${port} adresinde çalışıyor.`);
 });
+
+
