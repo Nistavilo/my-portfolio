@@ -1,0 +1,28 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependency directories
+node_modules/
+
+# Optional: Environment variable files
+.env
+
+# Optional: OS-specific files
+.DS_Store
+Thumbs.db
+
+# Optional: Editor-specific files
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+
+# Optional: Build output
+/build/
+
+# Optional: Typescript config
+tsconfig.json
