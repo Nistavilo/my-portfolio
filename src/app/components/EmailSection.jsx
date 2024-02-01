@@ -55,7 +55,7 @@ const EmailSection = () => {
         
         {/* Social icons */}
         <div className="socials flex flex-row gap-2">
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/Nistavilo" target="_blank" rel="noopener noreferrer">
             <Image src={GithubIcon} alt="Github Icon" />
           </a>
           <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
