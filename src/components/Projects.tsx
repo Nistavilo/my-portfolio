@@ -23,9 +23,9 @@ export function Projects() {
   useEffect(() => {
     const fetchRepos = async () => {
       try {
-        const response = await fetch('https://api.github.com/users/Nistavilo/repos?sort=updated&per_page=6');
+        const response = await fetch('https://api.github.com/users/Nistavilo/repos?sort=updated&per_page=3');
         const data = await response.json();
-        setRepos(data.slice(0, 6));
+        setRepos(data.slice(0, 3));
       } catch (error) {
         console.error('Error fetching repos:', error);
       } finally {

@@ -1,87 +1,135 @@
 'use client';
+
 import { useEffect, useRef } from 'react';
 
-export function ParticleBackground() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  opacity: number;
+}
+
+interface ParticleBackgroundProps {
+  particleCount?: number;
+  color?: string;           // Tailwind tonuna uygun RGBA baz rengi
+  minOpacity?: number;
+  maxOpacity?: number;
+  radius?: number;
+  maxVelocity?: number;
+  className?: string;
+}
+
+export function ParticleBackground({
+  particleCount = 40,
+  color = '59, 130, 246',     // rgb(59,130,246) => Tailwind 'blue-500'
+  minOpacity = 0.15,
+  maxOpacity = 0.45,
+  radius = 1.8,
+  maxVelocity = 0.25,
+  className = 'fixed inset-0 pointer-events-none z-0 opacity-30'
+}: ParticleBackgroundProps) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number>();
+  const particlesRef = useRef<Particle[]>([]);
+  const sizeRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    // Simple resize handler
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    const initParticles = () => {
+      const particles: Particle[] = [];
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * sizeRef.current.w,
+            y: Math.random() * sizeRef.current.h,
+            vx: (Math.random() - 0.5) * maxVelocity,
+            vy: (Math.random() - 0.5) * maxVelocity,
+            opacity:
+              Math.random() * (maxOpacity - minOpacity) + minOpacity
+          });
+      }
+      particlesRef.current = particles;
     };
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas, { passive: true });
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      sizeRef.current.w = w;
+      sizeRef.current.h = h;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.scale(dpr, dpr);
+    };
 
-    // Simplified particle system
-    const particles: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      opacity: number;
-    }> = [];
+    // Debounce resize
+    let resizeTimer: number | undefined;
+    const handleResize = () => {
+      if (resizeTimer) window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        // Reset transform before resizing to avoid compounded scale
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        resize();
+        initParticles();
+      }, 120);
+    };
 
-    // Reduced particle count for better performance
-    const particleCount = 30;
-    
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.2,
-        vy: (Math.random() - 0.5) * 0.2,
-        opacity: Math.random() * 0.3 + 0.1,
-      });
-    }
+    resize();
+    initParticles();
+    window.addEventListener('resize', handleResize, { passive: true });
 
-    // Simplified animation loop
-    const animate = () => {
-      if (!canvas || !ctx) return;
-      
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const step = () => {
+      const { w, h } = sizeRef.current;
+      ctx.clearRect(0, 0, w, h);
 
-      particles.forEach((particle) => {
-        // Update position
-        particle.x += particle.vx;
-        particle.y += particle.vy;
+      const particles = particlesRef.current;
 
-        // Simple edge bouncing
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
 
-        // Draw simple particle
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Bounce
+        if (p.x < 0) {
+          p.x = 0;
+          p.vx *= -1;
+        } else if (p.x > w) {
+          p.x = w;
+          p.vx *= -1;
+        }
+
+        if (p.y < 0) {
+          p.y = 0;
+          p.vy *= -1;
+        } else if (p.y > h) {
+          p.y = h;
+          p.vy *= -1;
+        }
+
         ctx.beginPath();
-        ctx.arc(particle.x, particle.y, 1, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(59, 130, 246, ${particle.opacity})`;
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${color}, ${p.opacity})`;
         ctx.fill();
-      });
+      }
 
-      animationRef.current = requestAnimationFrame(animate);
+      animationRef.current = requestAnimationFrame(step);
     };
 
-    animate();
+    step();
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      window.removeEventListener('resize', handleResize);
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
-  }, []);
+  }, [particleCount, color, minOpacity, maxOpacity, radius, maxVelocity]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0 opacity-30"
-    />
-  );
+  return <canvas ref={canvasRef} className={className} />;
 }
